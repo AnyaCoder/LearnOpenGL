@@ -14,6 +14,10 @@ public:
 
 private:
     void initialize();
+    void initializeWindow();
+    void initializeShaders();
+    void initializeTextures();
+    void initializeRenderData();
     void processInput();
     void render();
     void cleanup();

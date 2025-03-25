@@ -21,16 +21,25 @@ void Application::run() {
 }
 
 void Application::initialize() {
-    // Create window
+    initializeWindow();
+    initializeShaders();
+    initializeTextures();
+    initializeRenderData();
+}
+
+void Application::initializeWindow() {
     m_Window = std::make_unique<Window>(800, 600, "LearnOpenGL");
+}
 
-    // Load shader
+void Application::initializeShaders() {
     m_Shader = std::make_unique<Shader>("shaders/vertex.glsl", "shaders/fragment.glsl");
+}
 
-    // Load texture
+void Application::initializeTextures() {
     m_Texture = std::make_unique<Texture>("resources/texture.png");
+}
 
-    // Setup render data
+void Application::initializeRenderData() {
     float vertices[] = {
         // positions          // colors           // texture coords
          0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
