@@ -19,7 +19,7 @@ include_directories(
 )
 
 # 添加可执行文件
-add_executable(LearnOpenGL src/main.cpp src/Shader.cpp src/Texture.cpp)
+add_executable(LearnOpenGL src/main.cpp src/Shader.cpp src/Texture.cpp src/Application.cpp src/Window.cpp)
 target_compile_definitions(LearnOpenGL PRIVATE GLAD_GL=1)
 
 # 链接库
