@@ -39,14 +39,12 @@ include_directories(
 # GLAD 源文件
 file(GLOB_RECURSE GLAD_SOURCES thirdparty/glad/src/glad.c)
 
+# 收集 src 目录下的所有 .cpp 文件
+file(GLOB SRC_FILES src/*.cpp)
+
 # 添加可执行文件
 add_executable(LearnOpenGL 
-    src/main.cpp 
-    src/Shader.cpp 
-    src/Texture.cpp 
-    src/Application.cpp 
-    src/Window.cpp 
-    src/Mesh.cpp
+    ${SRC_FILES}
     ${GLAD_SOURCES}
 )
 target_compile_definitions(LearnOpenGL PRIVATE GLAD_GL=1)
