@@ -24,6 +24,14 @@ public:
         glfwSetWindowUserPointer(m_Window, pointer);
     }
 
+    void setFramebufferSizeCallback(GLFWframebuffersizefun callback) {
+        glfwSetFramebufferSizeCallback(m_Window, callback);
+    }
+
+    void getSize(int* width, int* height) {
+        glfwGetFramebufferSize(m_Window, width, height);
+    }
+
 private:
     GLFWwindow* m_Window;
 };

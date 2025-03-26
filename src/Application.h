@@ -58,5 +58,6 @@ private:
     
     // 鼠标回调
     static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
     void processMouseMovement(float xoffset, float yoffset);
 };

@@ -48,6 +48,7 @@ void Application::initializeWindow() {
     m_Window = std::make_unique<Window>(800, 600, "LearnOpenGL");
     m_Window->setUserPointer(this);
     m_Window->setCursorCallback(mouseCallback);
+    m_Window->setFramebufferSizeCallback(framebufferSizeCallback);
 }
 
 void Application::initializeShaders() {
@@ -147,9 +148,11 @@ void Application::render() {
     m_Shader->use();
     
     // 设置变换矩阵
+    int width, height;
+    m_Window->getSize(&width, &height);
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
-    glm::mat4 projection = glm::perspective(glm::radians(m_fov), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(m_fov), (float)width / (float)height, 0.1f, 100.0f);
     
     m_Shader->setMat4("model", model);
     m_Shader->setMat4("view", view);
@@ -183,6 +186,10 @@ void Application::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     if (app) {
         app->processMouseMovement(static_cast<float>(xpos), static_cast<float>(ypos));
     }
+}
+
+void Application::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
 }
 
 void Application::processMouseMovement(float xpos, float ypos) {
