@@ -34,6 +34,7 @@ private:
     std::unique_ptr<Mesh> m_Mesh;
     int m_currentShape;
     bool m_useTexture;
+    bool m_wireframeMode;
     glm::vec3 m_overrideColor;
     
     // Camera

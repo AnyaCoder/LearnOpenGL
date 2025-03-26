@@ -62,36 +62,45 @@ void Application::initializeTextures() {
 void Application::initializeRenderData() {
     // 创建不同形状的三角形
     createTriangleMeshes();
-    m_currentShape = 0;
     m_useTexture = true;
+    m_wireframeMode = false;
     m_overrideColor = glm::vec3(1.0f);
 }
 
 void Application::createTriangleMeshes() {
-    // 三角形1: 普通三角形
+    std::vector<unsigned int> indices = {0, 1, 2};
+    
+    // 三角形1: 中心位置，中等大小
     std::vector<Vertex> triangle1 = {
-        Vertex(glm::vec3(0.0f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.5f, 1.0f)),
+        Vertex(glm::vec3(0.0f,  0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.5f, 1.0f)),
         Vertex(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
-        Vertex(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
+        Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
     };
-    std::vector<unsigned int> indices1 = {0, 1, 2};
-    m_meshes.push_back(std::make_unique<Mesh>(triangle1, indices1));
+    m_meshes.push_back(std::make_unique<Mesh>(triangle1, indices));
 
-    // 三角形2: 等腰直角三角形
+    // 三角形2: 右上位置，小尺寸
     std::vector<Vertex> triangle2 = {
-        Vertex(glm::vec3(0.0f,  0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.5f, 0.0f), glm::vec2(0.0f, 0.0f)),
-        Vertex(glm::vec3(1.0f,  0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.5f), glm::vec2(1.0f, 0.0f)),
-        Vertex(glm::vec3(0.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f))
+        Vertex(glm::vec3(0.5f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.5f, 0.0f), glm::vec2(0.0f, 0.0f)),
+        Vertex(glm::vec3(0.7f,  0.3f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.5f), glm::vec2(1.0f, 0.0f)),
+        Vertex(glm::vec3(0.3f,  0.3f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f))
     };
-    m_meshes.push_back(std::make_unique<Mesh>(triangle2, indices1));
+    m_meshes.push_back(std::make_unique<Mesh>(triangle2, indices));
 
-    // 三角形3: 细长三角形
+    // 三角形3: 左下位置，旋转45度
     std::vector<Vertex> triangle3 = {
-        Vertex(glm::vec3(0.0f,  0.3f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(0.5f, 1.0f)),
-        Vertex(glm::vec3(0.8f, -0.3f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
-        Vertex(glm::vec3(-0.8f, -0.3f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f))
+        Vertex(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(0.5f, 1.0f)),
+        Vertex(glm::vec3(-0.2f, -0.8f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+        Vertex(glm::vec3(-0.8f, -0.8f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f))
     };
-    m_meshes.push_back(std::make_unique<Mesh>(triangle3, indices1));
+    m_meshes.push_back(std::make_unique<Mesh>(triangle3, indices));
+
+    // 三角形4: 左上位置，大尺寸
+    std::vector<Vertex> triangle4 = {
+        Vertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 1.0f)),
+        Vertex(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+        Vertex(glm::vec3(-1.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
+    };
+    m_meshes.push_back(std::make_unique<Mesh>(triangle4, indices));
 }
 
 void Application::processInput() {
@@ -114,20 +123,14 @@ void Application::processInput() {
         m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
     }
     
-    // 切换形状
-    if (glfwGetKey(m_Window->getNativeWindow(), GLFW_KEY_1) == GLFW_PRESS) {
-        m_currentShape = 0;
-    }
-    if (glfwGetKey(m_Window->getNativeWindow(), GLFW_KEY_2) == GLFW_PRESS) {
-        m_currentShape = 1;
-    }
-    if (glfwGetKey(m_Window->getNativeWindow(), GLFW_KEY_3) == GLFW_PRESS) {
-        m_currentShape = 2;
-    }
-    
     // 切换纹理/颜色模式
     if (glfwGetKey(m_Window->getNativeWindow(), GLFW_KEY_T) == GLFW_PRESS) {
         m_useTexture = !m_useTexture;
+    }
+    
+    // 切换线框图模式
+    if (glfwGetKey(m_Window->getNativeWindow(), GLFW_KEY_G) == GLFW_PRESS) {
+        m_wireframeMode = !m_wireframeMode;
     }
     
     // 改变颜色
@@ -178,7 +181,17 @@ void Application::render() {
         m_Texture->bind();
     }
     
-    m_meshes[m_currentShape]->draw();
+    // 设置多边形模式
+    if (m_wireframeMode) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glLineWidth(1.0f);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    for (auto& mesh : m_meshes) {
+        mesh->draw();
+    }
 }
 
 void Application::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
