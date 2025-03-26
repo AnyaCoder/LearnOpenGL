@@ -29,6 +29,11 @@ Window::Window(int width, int height, const std::string& title) {
     // 初始化 OpenGL 上下文后，启用深度测试
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS); // 设置深度测试函数为 GL_LESS
+
+    // 启用背面剔除
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK); // 剔除背面
+    glFrontFace(GL_CCW); // 正面为逆时针（默认值，可省略）
 }
 
 Window::~Window() {
