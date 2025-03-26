@@ -16,6 +16,14 @@ public:
 
     GLFWwindow* getNativeWindow() const { return m_Window; }
 
+    void setCursorCallback(GLFWcursorposfun callback) {
+        glfwSetCursorPosCallback(m_Window, callback);
+    }
+
+    void setUserPointer(void* pointer) {
+        glfwSetWindowUserPointer(m_Window, pointer);
+    }
+
 private:
     GLFWwindow* m_Window;
 };
