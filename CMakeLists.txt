@@ -46,6 +46,7 @@ add_executable(LearnOpenGL
     src/Texture.cpp 
     src/Application.cpp 
     src/Window.cpp 
+    src/Mesh.cpp
     ${GLAD_SOURCES}
 )
 target_compile_definitions(LearnOpenGL PRIVATE GLAD_GL=1)

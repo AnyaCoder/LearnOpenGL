@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Mesh.h"
 #include <memory>
 
 class Application {
@@ -27,5 +28,5 @@ private:
     std::unique_ptr<Texture> m_Texture;
     
     // Render data
-    unsigned int m_VAO, m_VBO, m_EBO;
+    std::unique_ptr<Mesh> m_Mesh;
 };
