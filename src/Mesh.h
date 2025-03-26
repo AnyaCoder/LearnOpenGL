@@ -14,4 +14,5 @@ private:
     GLuint m_VAO;
     GLuint m_VBO;
     GLuint m_EBO;
+    GLsizei m_indexCount;
 };

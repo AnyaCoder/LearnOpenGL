@@ -10,6 +10,53 @@ OpenGL学习项目，按照4个阶段逐步实现3D渲染功能。
 4. 生成项目: `cmake ..`
 5. 编译: `cmake --build .`
 
+## 新增功能
+
+### 三角形控制
+- 按数字键1/2/3切换三种不同形状的三角形
+- 按T键切换纹理/纯色模式
+- 按R/G/B键改变三角形颜色(红/绿/蓝)
+
+## 项目架构
+
+```mermaid
+classDiagram
+    class Application {
+        +run()
+        -m_Window
+        -m_Shader
+        -m_Texture
+        -m_meshes
+    }
+    
+    class Window {
+        +clear()
+        +swapBuffers()
+    }
+    
+    class Shader {
+        +use()
+        +setBool()
+        +setVec3()
+    }
+    
+    class Mesh {
+        +draw()
+        -m_VAO
+        -m_VBO
+        -m_EBO
+    }
+    
+    class Texture {
+        +bind()
+    }
+    
+    Application --> Window
+    Application --> Shader
+    Application --> Texture
+    Application --> Mesh
+```
+
 ## 项目阶段规划
 
 1. **基础设置**

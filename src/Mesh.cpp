@@ -1,7 +1,10 @@
 #include "Mesh.h"
-#include <glad/glad.h>
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
+
+    // 存储索引数量
+    m_indexCount = static_cast<GLsizei>(indices.size());
+    
     // Generate buffers
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
@@ -43,5 +46,5 @@ Mesh::~Mesh() {
 
 void Mesh::draw() const {
     glBindVertexArray(m_VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
 }

@@ -28,5 +28,14 @@ private:
     std::unique_ptr<Texture> m_Texture;
     
     // Render data
+    std::vector<std::unique_ptr<Mesh>> m_meshes;
     std::unique_ptr<Mesh> m_Mesh;
+    int m_currentShape;
+    bool m_useTexture;
+    glm::vec3 m_overrideColor;
+    
+    void createTriangleMeshes();
+    void switchShape();
+    void toggleTexture();
+    void changeColor();
 };
