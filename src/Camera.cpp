@@ -6,8 +6,8 @@ Camera::Camera() {
     m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);     // 上方向
     m_yaw = -90.0f;                               // 初始偏航角
     m_pitch = 0.0f;                               // 初始俯仰角
-    m_lastX = 400.0f;                             // 初始鼠标 X 位置
-    m_lastY = 300.0f;                             // 初始鼠标 Y 位置
+    m_lastX = 800.0f;                             // 初始鼠标 X 位置
+    m_lastY = 450.0f;                             // 初始鼠标 Y 位置
     m_firstMouse = true;                          // 首次鼠标输入标志
     m_fov = 45.0f;                                // 初始视野角度
 }

@@ -14,7 +14,7 @@ Application::Application() {
 Application::~Application() {}
 
 void Application::initialize() {
-    m_window = std::make_unique<Window>(800, 600, "LearnOpenGL");
+    m_window = std::make_unique<Window>(1600, 900, "LearnOpenGL");
     m_shader = std::make_unique<Shader>("shaders/vertex.glsl", "shaders/fragment.glsl");
     m_texture = std::make_unique<Texture>("resources/texture.png");
     m_camera = std::make_unique<Camera>();

@@ -17,6 +17,8 @@ Window::Window(int width, int height, const std::string& title) {
     }
 
     glfwMakeContextCurrent(m_Window);
+    // 设置鼠标输入模式：隐藏光标并捕获
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         glfwTerminate();
