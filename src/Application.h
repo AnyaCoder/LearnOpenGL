@@ -35,6 +35,7 @@ private:
     int m_currentShape;
     bool m_useTexture;
     bool m_wireframeMode;
+    bool m_useLighting;
     glm::vec3 m_overrideColor;
     
     // Camera
@@ -53,6 +54,8 @@ private:
     glm::vec3 m_viewPos;
     
     void createTriangleMeshes();
+    void createCoordinateAxes();
+    void createCubeMesh();
     void switchShape();
     void toggleTexture();
     void changeColor();

@@ -53,5 +53,5 @@ Mesh::~Mesh() {
 
 void Mesh::draw() const {
     glBindVertexArray(m_VAO);
-    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(m_drawMode, m_indexCount, GL_UNSIGNED_INT, 0);
 }

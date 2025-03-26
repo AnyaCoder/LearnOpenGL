@@ -10,6 +10,10 @@ public:
     ~Mesh();
     
     void draw() const;
+    void setDrawMode(GLenum mode) { m_drawMode = mode; }
+    
+private:
+    GLenum m_drawMode = GL_TRIANGLES;
     
 private:
     GLuint m_VAO;

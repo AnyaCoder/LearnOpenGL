@@ -64,43 +64,91 @@ void Application::initializeRenderData() {
     createTriangleMeshes();
     m_useTexture = true;
     m_wireframeMode = false;
+    m_useLighting = true;
     m_overrideColor = glm::vec3(1.0f);
 }
 
 void Application::createTriangleMeshes() {
-    std::vector<unsigned int> indices = {0, 1, 2};
+    // 创建坐标轴
+    createCoordinateAxes();
     
-    // 三角形1: 中心位置，中等大小
-    std::vector<Vertex> triangle1 = {
-        Vertex(glm::vec3(0.0f,  0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.5f, 1.0f)),
-        Vertex(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
-        Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
-    };
-    m_meshes.push_back(std::make_unique<Mesh>(triangle1, indices));
+    // 创建方块
+    createCubeMesh();
+}
 
-    // 三角形2: 右上位置，小尺寸
-    std::vector<Vertex> triangle2 = {
-        Vertex(glm::vec3(0.5f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.5f, 0.0f), glm::vec2(0.0f, 0.0f)),
-        Vertex(glm::vec3(0.7f,  0.3f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.5f), glm::vec2(1.0f, 0.0f)),
-        Vertex(glm::vec3(0.3f,  0.3f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f))
+void Application::createCoordinateAxes() {
+    // X轴(红色)
+    std::vector<Vertex> xAxis = {
+        Vertex(glm::vec3(-100.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f)),
+        Vertex(glm::vec3(100.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f))
     };
-    m_meshes.push_back(std::make_unique<Mesh>(triangle2, indices));
+    std::vector<unsigned int> xIndices = {0, 1};
+    m_meshes.push_back(std::make_unique<Mesh>(xAxis, xIndices));
+    m_meshes.back()->setDrawMode(GL_LINES);
 
-    // 三角形3: 左下位置，旋转45度
-    std::vector<Vertex> triangle3 = {
-        Vertex(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(0.5f, 1.0f)),
-        Vertex(glm::vec3(-0.2f, -0.8f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
-        Vertex(glm::vec3(-0.8f, -0.8f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f))
+    // Y轴(绿色)
+    std::vector<Vertex> yAxis = {
+        Vertex(glm::vec3(0.0f, -100.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f)),
+        Vertex(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f))
     };
-    m_meshes.push_back(std::make_unique<Mesh>(triangle3, indices));
+    std::vector<unsigned int> yIndices = {0, 1};
+    m_meshes.push_back(std::make_unique<Mesh>(yAxis, yIndices));
+    m_meshes.back()->setDrawMode(GL_LINES);
 
-    // 三角形4: 左上位置，大尺寸
-    std::vector<Vertex> triangle4 = {
-        Vertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 1.0f)),
-        Vertex(glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
-        Vertex(glm::vec3(-1.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
+    // Z轴(蓝色)
+    std::vector<Vertex> zAxis = {
+        Vertex(glm::vec3(0.0f, 0.0f, -100.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f)),
+        Vertex(glm::vec3(0.0f, 0.0f, 100.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f))
     };
-    m_meshes.push_back(std::make_unique<Mesh>(triangle4, indices));
+    std::vector<unsigned int> zIndices = {0, 1};
+    m_meshes.push_back(std::make_unique<Mesh>(zAxis, zIndices));
+    m_meshes.back()->setDrawMode(GL_LINES);
+}
+
+void Application::createCubeMesh() {
+    // 定义方块顶点(8个顶点)
+    std::vector<Vertex> vertices = {
+        // 前面
+        Vertex(glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), glm::vec2(0.0f, 0.0f)),
+        Vertex(glm::vec3( 0.5f, -0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), glm::vec2(1.0f, 0.0f)),
+        Vertex(glm::vec3( 0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), glm::vec2(1.0f, 1.0f)),
+        Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), glm::vec2(0.0f, 1.0f)),
+        
+        // 后面
+        Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f), glm::vec2(0.0f, 0.0f)),
+        Vertex(glm::vec3( 0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f), glm::vec2(1.0f, 0.0f)),
+        Vertex(glm::vec3( 0.5f,  0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f), glm::vec2(1.0f, 1.0f)),
+        Vertex(glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f), glm::vec2(0.0f, 1.0f))
+    };
+
+    // 定义索引(12个等腰直角三角形)
+    std::vector<unsigned int> indices = {
+        // 前面
+        0, 1, 2,
+        0, 2, 3,
+        
+        // 后面
+        4, 6, 5,
+        4, 7, 6,
+        
+        // 左面
+        4, 0, 3,
+        4, 3, 7,
+        
+        // 右面
+        1, 5, 6,
+        1, 6, 2,
+        
+        // 上面
+        3, 2, 6,
+        3, 6, 7,
+        
+        // 下面
+        4, 5, 1,
+        4, 1, 0
+    };
+
+    m_meshes.push_back(std::make_unique<Mesh>(vertices, indices));
 }
 
 void Application::processInput() {
@@ -143,6 +191,9 @@ void Application::processInput() {
     if (glfwGetKey(m_Window->getNativeWindow(), GLFW_KEY_B) == GLFW_PRESS) {
         m_overrideColor = glm::vec3(0.0f, 0.0f, 1.0f); // 蓝色
     }
+    if (glfwGetKey(m_Window->getNativeWindow(), GLFW_KEY_L) == GLFW_PRESS) {
+        m_useLighting = !m_useLighting;
+    }
 }
 
 void Application::render() {
@@ -161,21 +212,24 @@ void Application::render() {
     m_Shader->setMat4("view", view);
     m_Shader->setMat4("projection", projection);
     
-    // 设置光照uniforms
-    m_Shader->setVec3("viewPos", m_cameraPos);
-    m_Shader->setVec3("light.position", m_lightPos);
-    m_Shader->setVec3("light.ambient", glm::vec3(0.2f));
-    m_Shader->setVec3("light.diffuse", glm::vec3(0.5f));
-    m_Shader->setVec3("light.specular", glm::vec3(1.0f));
-    
-    // 设置材质uniforms
-    m_Shader->setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-    m_Shader->setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-    m_Shader->setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-    m_Shader->setFloat("material.shininess", 32.0f);
-    
-    m_Shader->setBool("useTexture", m_useTexture);
-    m_Shader->setVec3("overrideColor", m_overrideColor);
+    // 控制光照
+    m_Shader->setBool("useLighting", m_useLighting);
+    if (m_useLighting) {
+        m_Shader->setVec3("viewPos", m_cameraPos);
+        m_Shader->setVec3("light.position", m_lightPos);
+        m_Shader->setVec3("light.ambient", glm::vec3(0.2f));
+        m_Shader->setVec3("light.diffuse", glm::vec3(0.5f));
+        m_Shader->setVec3("light.specular", glm::vec3(1.0f));
+        
+        m_Shader->setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+        m_Shader->setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+        m_Shader->setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+        m_Shader->setFloat("material.shininess", 32.0f);
+        
+        m_Shader->setBool("useTexture", m_useTexture);
+        m_Shader->setVec3("overrideColor", m_overrideColor);
+    }
+   
     
     if (m_useTexture) {
         m_Texture->bind();
@@ -189,8 +243,21 @@ void Application::render() {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    for (auto& mesh : m_meshes) {
-        mesh->draw();
+    // 绘制坐标轴
+    glLineWidth(3.0f); // 设置线条宽度
+    for (int i = 0; i < 3; i++) {
+        m_meshes[i]->draw();
+    }
+    glLineWidth(1.0f); // 恢复默认宽度
+
+    // 3x3密铺方块 (高度为0)
+    for (int x = -1; x <= 1; x++) {
+        for (int z = -1; z <= 1; z++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(x * 1.2f, 0.0f, z * 1.2f));
+            m_Shader->setMat4("model", model);
+            m_meshes[3]->draw(); // 方块是第4个网格(索引3)
+        }
     }
 }
 

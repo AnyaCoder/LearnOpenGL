@@ -8,6 +8,7 @@ in vec2 TexCoord;
 
 uniform sampler2D ourTexture;
 uniform bool useTexture;
+uniform bool useLighting;
 uniform vec3 overrideColor;
 
 // Material properties
@@ -32,31 +33,32 @@ uniform vec3 viewPos;
 
 void main()
 {
-    // Ambient
-    vec3 ambient = light.ambient * material.ambient;
+    vec3 result;
     
-    // Diffuse 
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * (diff * material.diffuse);
-    
-    // Specular - Phong
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);
-    
-    // Blinn-Phong
-    // vec3 halfwayDir = normalize(lightDir + viewDir);  
-    // float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
-    // vec3 specular = light.specular * (spec * material.specular);
-    
-    vec3 result = (ambient + diffuse + specular);
+    if (useLighting) {
+        // Ambient
+        vec3 ambient = light.ambient * material.ambient;
+        
+        // Diffuse 
+        vec3 norm = normalize(Normal);
+        vec3 lightDir = normalize(light.position - FragPos);
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = light.diffuse * (diff * material.diffuse);
+        
+        // Specular - Phong
+        vec3 viewDir = normalize(viewPos - FragPos);
+        vec3 reflectDir = reflect(-lightDir, norm);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+        vec3 specular = light.specular * (spec * material.specular);
+        
+        result = (ambient + diffuse + specular) * Color;
+    } else {
+        result = Color;
+    }
     
     if (useTexture) {
-        FragColor = texture(ourTexture, TexCoord) * vec4(result * Color, 1.0);
+        FragColor = texture(ourTexture, TexCoord) * vec4(result, 1.0);
     } else {
-        FragColor = vec4(result * overrideColor * Color, 1.0);
+        FragColor = vec4(result * overrideColor, 1.0);
     }
 }
