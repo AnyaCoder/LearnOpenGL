@@ -5,8 +5,8 @@
 #include "Window.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "Renderer.h"
-#include "Scene.h"
+#include "ECS/ECSManager.h"
+#include "ECS/RenderSystem.h"
 #include "InputHandler.h"
 
 class Application {
@@ -19,11 +19,9 @@ private:
     void initialize();
 
     std::unique_ptr<Window> m_window;
-    std::unique_ptr<Shader> m_shader;
-    std::unique_ptr<Texture> m_texture;
-    std::unique_ptr<Camera> m_camera;
-    std::unique_ptr<Renderer> m_renderer;
-    std::unique_ptr<Scene> m_scene;
+    std::unique_ptr<ECSManager> m_ecs;
+    std::shared_ptr<Entity> m_rendererEntity;
+    std::shared_ptr<Entity> m_cameraEntity;
     std::unique_ptr<InputHandler> m_inputHandler;
 };
 

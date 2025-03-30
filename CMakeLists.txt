@@ -40,7 +40,10 @@ include_directories(
 file(GLOB_RECURSE GLAD_SOURCES thirdparty/glad/src/glad.c)
 
 # 收集 src 目录下的所有 .cpp 文件
-file(GLOB SRC_FILES src/*.cpp)
+file(GLOB SRC_FILES 
+    src/*.cpp
+    src/ECS/*.cpp
+)
 
 # 添加可执行文件
 add_executable(LearnOpenGL 

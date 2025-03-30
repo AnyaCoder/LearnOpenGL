@@ -1,64 +1,77 @@
 #include "InputHandler.h"
-#include "Camera.h"
-#include "Renderer.h"
 
-InputHandler::InputHandler(GLFWwindow* window, Camera* camera, Renderer* renderer)
-    : m_window(window), m_camera(camera), m_renderer(renderer) {}
+InputHandler::InputHandler(GLFWwindow* window, std::shared_ptr<CameraComponent> camera, std::shared_ptr<RenderSystem> renderSystem)
+    : m_window(window), m_camera(camera), m_renderSystem(renderSystem)
+{
+        
+    // 验证输入
+    if (!m_window || !m_camera || !m_renderSystem) {
+        m_isValid = false;
+        return;
+    }
+    m_lastPressTime = (double)0.0f;
+    m_isValid = true;
+
+    // 初始化相机移动映射
+    m_movementKeys = {
+        {GLFW_KEY_W, [this]() { return m_camera->getFront() * CAMERA_SPEED; }},
+        {GLFW_KEY_S, [this]() { return -m_camera->getFront() * CAMERA_SPEED; }},
+        {GLFW_KEY_D, [this]() { return glm::normalize(glm::cross(m_camera->getFront(), m_camera->getUp())) * CAMERA_SPEED; }},
+        {GLFW_KEY_A, [this]() { return -glm::normalize(glm::cross(m_camera->getFront(), m_camera->getUp())) * CAMERA_SPEED; }}
+    };
+
+    // 初始化模式切换映射
+    m_modeKeys = {
+        {GLFW_KEY_T, [](std::shared_ptr<MaterialComponent> m) { m->setUseTexture(!m->getUseTexture()); }},
+        {GLFW_KEY_F, [](std::shared_ptr<MaterialComponent> m) { m->setWireframeMode(!m->getWireframeMode()); }},
+        {GLFW_KEY_L, [](std::shared_ptr<MaterialComponent> m) { m->setUseLighting(!m->getUseLighting()); }}
+    };
+
+    // 初始化颜色切换映射
+    m_colorKeys = {
+        {GLFW_KEY_R, glm::vec3(1.0f, 0.0f, 0.0f)},
+        {GLFW_KEY_G, glm::vec3(0.0f, 1.0f, 0.0f)},
+        {GLFW_KEY_B, glm::vec3(0.0f, 0.0f, 1.0f)}
+    };
+}
 
 void InputHandler::processInput() {
-    static double lastPressTime = 0.0; // 用于防抖
+    if (!m_isValid) return;
+
     double currentTime = glfwGetTime();
-    float cameraSpeed = 0.05f;
 
     // 退出程序
     if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(m_window, true);
+        return;
     }
 
     // 相机移动
     glm::vec3 pos = m_camera->getPosition();
-    glm::vec3 front = m_camera->getFront(); // 假设 Camera 提供 getFront() 获取朝向
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); // 假设固定向上向量
+    for (const auto& [key, getOffset] : m_movementKeys) {
+        if (glfwGetKey(m_window, key) == GLFW_PRESS) {
+            pos += getOffset();
+        }
+    }
+    m_camera->setPosition(pos);
 
-    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS) {
-        pos += cameraSpeed * front; // 前进
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS) {
-        pos -= cameraSpeed * front; // 后退
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS) {
-        pos -= glm::normalize(glm::cross(front, up)) * cameraSpeed; // 左移
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS) {
-        pos += glm::normalize(glm::cross(front, up)) * cameraSpeed; // 右移
-    }
-    m_camera->setPosition(pos); // 更新相机位置
+    // 处理模式和颜色切换
+    auto processToggle = [&](int key, const auto& action) {
+        if (glfwGetKey(m_window, key) == GLFW_PRESS && currentTime - m_lastPressTime > DEBOUNCE_TIME) {
+            m_renderSystem->forEachEntity([&](std::shared_ptr<Entity> entity) {
+                if (auto material = entity->getComponent<MaterialComponent>()) {
+                    action(material);
+                }
+            });
+            m_lastPressTime = currentTime;
+        }
+    };
 
-    // 切换模式（添加防抖，避免连续触发）
-    if (glfwGetKey(m_window, GLFW_KEY_T) == GLFW_PRESS && currentTime - lastPressTime > 0.2) {
-        m_renderer->setUseTexture(!m_renderer->getUseTexture());
-        lastPressTime = currentTime;
+    for (const auto& [key, func] : m_modeKeys) {
+        processToggle(key, func);
     }
-    if (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS && currentTime - lastPressTime > 0.2) {
-        m_renderer->setWireframeMode(!m_renderer->getWireframeMode());
-        lastPressTime = currentTime;
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_L) == GLFW_PRESS && currentTime - lastPressTime > 0.2) {
-        m_renderer->setUseLighting(!m_renderer->getUseLighting());
-        lastPressTime = currentTime;
-    }
-
-    // 改变颜色（同样添加防抖）
-    if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS && currentTime - lastPressTime > 0.2) {
-        m_renderer->setOverrideColor(glm::vec3(1.0f, 0.0f, 0.0f)); // 红色
-        lastPressTime = currentTime;
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_G) == GLFW_PRESS && currentTime - lastPressTime > 0.2) {
-        m_renderer->setOverrideColor(glm::vec3(0.0f, 1.0f, 0.0f)); // 绿色
-        lastPressTime = currentTime;
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_B) == GLFW_PRESS && currentTime - lastPressTime > 0.2) {
-        m_renderer->setOverrideColor(glm::vec3(0.0f, 0.0f, 1.0f)); // 蓝色
-        lastPressTime = currentTime;
+    
+    for (const auto& [key, color] : m_colorKeys) {
+        processToggle(key, [color](std::shared_ptr<MaterialComponent> m) { m->setOverrideColor(color); });
     }
 }
