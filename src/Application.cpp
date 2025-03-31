@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "InputHandler.h"
+#include "MeshFactory.h"
 
 Application::Application() {
     initialize();
@@ -25,73 +26,56 @@ void Application::initialize() {
     auto cameraComp = m_cameraEntity->addComponent<CameraComponent>();
     cameraComp->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-    
     auto renderSystem = m_ecs->addSystem<RenderSystem>(m_cameraEntity);
 
-    // Create and configure cube entity
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    // 正方体
     auto cubeEntity = m_ecs->createEntity();
     auto transform = cubeEntity->addComponent<TransformComponent>();
-    transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
+    transform->position = glm::vec3(-4.0f, 0.0f, 0.0f);
     cubeEntity->addComponent<MaterialComponent>(shader, texture);
-
-    std::vector<Vertex> vertices = {
-        // 前 (Z = 0.5)
-        {{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}, // 0
-        {{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // 1
-        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}, // 2
-        {{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}, // 3
-    
-        // 后 (Z = -0.5)
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}, // 4
-        {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // 5
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}, // 6
-        {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}, // 7
-    
-        // 左 (X = -0.5)
-        {{-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}, // 8
-        {{-0.5f,  0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // 9
-        {{-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}, // 10
-        {{-0.5f, -0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}, // 11
-    
-        // 右 (X = 0.5)
-        {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}, // 12
-        {{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // 13
-        {{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}, // 14
-        {{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}, // 15
-    
-        // 上 (Y = 0.5)
-        {{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}, // 16
-        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // 17
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}, // 18
-        {{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}, // 19
-    
-        // 下 (Y = -0.5)
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}, // 20
-        {{ 0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // 21
-        {{ 0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}, // 22
-        {{-0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}, // 23
-    };
-    
-    // 要判断为正面，三角面的顶点定义必须为逆时针方向
-    std::vector<unsigned int> indices = {
-        // 前
-        0, 1, 2,  0, 2, 3,
-        // 后
-        4, 5, 6,  4, 6, 7,
-        // 左
-        8, 10, 9,  8, 11, 10,
-        // 右
-        12, 14, 13,  12, 15, 14,
-        // 上
-        16, 17, 18,  16, 18, 19,
-        // 下
-        20, 21, 22,  20, 22, 23
-    };
-
-
-    // Add mesh to cube and register with render system
+    MeshFactory::createCube(vertices, indices);  // 使用 MeshFactory 生成立方体数据
     cubeEntity->addComponent<MeshComponent>(vertices, indices);
     renderSystem->registerEntity(cubeEntity);
+
+    // 球体
+    auto sphereEntity = m_ecs->createEntity();
+    auto sphereTransform = sphereEntity->addComponent<TransformComponent>();
+    sphereTransform->position = glm::vec3(-2.0f, 0.0f, 0.0f);
+    sphereEntity->addComponent<MaterialComponent>(shader, texture);
+    MeshFactory::createSphere(vertices, indices, 0.5f, 32, 16);  // 生成球体数据
+    sphereEntity->addComponent<MeshComponent>(vertices, indices);
+    renderSystem->registerEntity(sphereEntity);
+
+    // 创建胶囊体
+    auto capsuleEntity = m_ecs->createEntity();
+    auto capsuleTransform = capsuleEntity->addComponent<TransformComponent>();
+    capsuleTransform->position = glm::vec3(0.0f, 0.0f, 0.0f);
+    MeshFactory::createCapsule(vertices, indices, 0.5f, 1.0f, 32, 8);
+    capsuleEntity->addComponent<MeshComponent>(vertices, indices);
+    capsuleEntity->addComponent<MaterialComponent>(shader, texture);
+    renderSystem->registerEntity(capsuleEntity);
+
+    // 创建圆锥体
+    auto coneEntity = m_ecs->createEntity();
+    auto coneTransform = coneEntity->addComponent<TransformComponent>();
+    coneTransform->position = glm::vec3(2.0f, 0.0f, 0.0f);
+    MeshFactory::createCone(vertices, indices, 0.5f, 1.0f, 32);
+    coneEntity->addComponent<MeshComponent>(vertices, indices);
+    coneEntity->addComponent<MaterialComponent>(shader, texture);
+    renderSystem->registerEntity(coneEntity);
+
+    // 创建圆柱体
+    auto cylinderEntity = m_ecs->createEntity();
+    auto cylinderTransform = cylinderEntity->addComponent<TransformComponent>();
+    cylinderTransform->position = glm::vec3(4.0f, 0.0f, 0.0f);
+    MeshFactory::createCylinder(vertices, indices, 0.5f, 1.0f, 32);
+    cylinderEntity->addComponent<MeshComponent>(vertices, indices);
+    cylinderEntity->addComponent<MaterialComponent>(shader, texture);
+    renderSystem->registerEntity(cylinderEntity);
+
 
     // Initialize input handler
     m_inputHandler = std::make_unique<InputHandler>(m_window->getNativeWindow(), cameraComp, renderSystem);
